@@ -16,7 +16,7 @@ Pick the artifact that matches the Pedro Pathing version in your robot project. 
 |----------|---------|---------------|--------|
 | `org.hivevisionftc:ball-chase-weaver` | 12.x | 3.x | **Current.** Marrow Weaver paths that route around obstacles; `ChaseDriver`/`PickupHandler` seams so it is not locked to one drivetrain or intake. |
 | `org.hivevisionftc:ball-chase` | 12.x (verified 12.0.0) | 3.x (verified 3.0.1) | **Archived.** `BallChaseFollower` is `@Deprecated`; kept building so mid-season teams are not broken. No new features. |
-| `org.hivevisionftc:ball-chase-legacy` | 11.x (verified 11.2.1) | 2.x (verified 2.1.2) | **Archived.** Has `HiveConfig` and `PickupConfirmer`. |
+| `org.hivevisionftc:ball-chase-legacy` | 11.x (verified 11.2.1) | 2.x (verified 2.1.2) | **Archived.** Has `HiveConfig` and `PickupConfirmer`. Removal candidate. |
 
 > **Where BallChaseFollower went.** Straight-line travel can't plan around obstacles,
 > and the hybrid driver had no seam for another drivetrain, so development moved to
