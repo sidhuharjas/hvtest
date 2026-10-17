@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HiveVision — docs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #000000;
+    --fg: #fafafa;          /* neutral-50 */
+    --text: #d4d4d4;        /* neutral-300 */
+    --muted: #a3a3a3;       /* neutral-400 */
+    --faint: #737373;       /* neutral-500 */
+    --border: #262626;      /* neutral-800 */
+    --panel: #171717;       /* neutral-900 */
+    --radius: 0.625rem;
+  }
+  * { box-sizing: border-box; }
+  html { scrollbar-gutter: stable; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    color: var(--text);
+    background-color: #000000;
+    background-image: linear-gradient(to bottom, #16161a 0%, #0a0a0c 35%, #000000 100%);
+    background-attachment: fixed;
+    font: 15px/1.7 "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  #honeycomb-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    pointer-events: none;
+    z-index: 1;
+  }
+  header, main, footer { position: relative; z-index: 2; }
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: .75rem 1.5rem;
+    max-width: 60rem;
+    margin: 0 auto;
+    padding: 1.5rem 1.25rem 1.25rem;
+  }
+  .brand {
+    color: var(--fg);
+    font-weight: 700;
+    font-size: 1rem;
+    text-decoration: none;
+    letter-spacing: -0.01em;
+  }
+  nav { display: flex; flex-wrap: wrap; gap: .35rem 1.25rem; font-size: .875rem; }
+  nav a {
+    color: var(--muted);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  nav a:hover { color: var(--fg); }
+
+  main {
+    max-width: 40rem;      /* matches --sl-content-width */
+    margin: 0 auto;
+    padding: 1.5rem 1.25rem 4rem;
+  }
+  h1 {
+    color: var(--fg);
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 0 0 .5rem;
+  }
+  .tagline { color: var(--muted); margin: 0 0 2.5rem; }
+  h2 {
+    color: var(--fg);
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    margin: 3rem 0 .75rem;
+    padding-top: 1.5rem;
+  }
+  h3 {
+    color: var(--fg);
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+    font-weight: 500;
+    margin: 1.75rem 0 .35rem;
+  }
+  p { margin: .5rem 0 1rem; }
+  a {
+    color: var(--fg);
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: .2em;
+    text-decoration-color: var(--faint);
+  }
+  a:hover { text-decoration-color: var(--fg); }
+
+  pre {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: .9rem 1.1rem;
+    overflow-x: auto;
+    margin: .5rem 0 1.25rem;
+  }
+  pre code {
+    font: 13.5px/1.6 "Geist Mono", ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+    color: var(--text);
+    background: none;
+    border: none;
+    padding: 0;
+  }
+  code {
+    font: .875em "Geist Mono", ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+    background: var(--panel);
+    border-radius: calc(var(--radius) - 4px);
+    padding: .15rem .4rem;
+  }
+  table { border-collapse: collapse; width: 100%; margin: .5rem 0 1.25rem; font-size: .95rem; }
+  th, td { text-align: left; padding: .5rem .6rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { color: var(--fg); font-weight: 500; }
+  ol, ul { margin: .25rem 0 1.25rem; padding-left: 1.4rem; }
+  li { margin: .35rem 0; }
+  li::marker { color: var(--faint); }
+
+  /* Starlight-style "note" aside */
+  .note {
+    background: color-mix(in srgb, #14304d 78%, var(--panel));
+    border: 1px solid rgba(96, 165, 250, .35);
+    border-radius: calc(var(--radius) * 1.8);
+    color: #c8dcf8;
+    padding: .875rem 1rem;
+    margin: .75rem 0 1.25rem;
+    font-size: .875rem;
+    line-height: 1.625;
+  }
+  .sub { color: var(--faint); font-size: .85em; }
+
+  footer {
+    max-width: 40rem;
+    margin: 0 auto;
+    padding: 1.25rem 1.25rem 3rem;
+    border-top: 1px solid var(--border);
+    color: var(--faint);
+    font-size: .875rem;
+  }
+  footer a { color: var(--muted); font-weight: 500; }
+  footer a:hover { color: var(--fg); }
+
+  ::selection { background: #e5e5e5; color: #171717; }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="brand" href="#">HiveVision</a>
+  <nav>
+    <a href="#install">Install</a>
+    <a href="#quickstart">Quickstart</a>
+    <a href="#examples">Examples</a>
+    <a href="#calibration">Calibration</a>
+    <a href="#build">Build</a>
+    <a href="https://github.com/sidhuharjas/hvtest" target="_blank" rel="noopener">GitHub</a>
+  </nav>
+</header>
+
+<main>
+
+  <h1>HiveVision</h1>
+  <p class="tagline">Point a Limelight 3A at the field, get game-element positions in field coordinates,
+  and route autonomous paths around obstacles. Built for FTC.</p>
+
+  <h2 id="install">Install</h2>
+  <p>Add the repository and the modules you need to your <code>TeamCode/build.gradle</code>:</p>
+<pre>
+repositories {
+    maven { url = uri("https://sidhuharjas.github.io/hvtest") }
+}
+
+dependencies {
+    implementation "org.hivevisionftc:core:1.0.0"
+    // optional — auto-routing with Marrow Weaver
+    implementation "org.hivevisionftc:weaver:1.0.0"
+}
+</pre>
+  <p>Sync, and you're done. <code>core</code> is the perception pipeline; <code>weaver</code> is an
+  add-on that turns detections into obstacle-avoiding paths.</p>
+
+  <h2 id="quickstart">Quickstart</h2>
+
+  <h3>1. Set up the camera</h3>
+  <p>Measure your camera mount (see <a href="#calibration">Calibration</a>), then create the config:</p>
+<pre>
+VisionConfig config = new VisionConfig()
+        .camPitchDeg(25.0)      // tilt below horizontal, degrees
+        .camHeight(9.2)         // floor to lens center, inches
+        .ballHeight(3.0)        // floor to game element center, inches
+        .camXOffset(4.0)        // lens forward of robot center, inches
+        .camYOffset(0.0)        // lens left of robot center (+ left)
+        .minConfidence(0.44)    // ignore weak detections
+        .maxStalenessMs(120)    // discard stale data
+        .pipeline(3)            // Limelight pipeline index
+        .pollingRateHz(150);
+
+Limelight3A limelight = hardwareMap.get(Limelight3A.class, "limelight");
+HiveVision vision = new HiveVision(limelight, config);
+
+// optional: restrict which classes to chase (default = all three)
+vision.setAllowedClasses(
+        BiobuzzClasses.POLLEN,          // neutral yellow pollen
+        BiobuzzClasses.NECTAR_RED,      // alliance red nectar
+        BiobuzzClasses.NECTAR_BLUE);    // alliance blue nectar
+</pre>
+  <p>Class IDs match the model labels: <code>POLLEN&nbsp;=&nbsp;0</code>, <code>NECTAR_RED&nbsp;=&nbsp;1</code>,
+  <code>NECTAR_BLUE&nbsp;=&nbsp;2</code>. Skip <code>setAllowedClasses</code> entirely to keep all three
+  enabled, or pass only the classes you want (e.g. <code>NECTAR_RED, NECTAR_BLUE</code> to ignore pollen).</p>
+
+  <h3>2. Ask for the closest target</h3>
+  <p>Pass your current pose so detections come back in field coordinates:</p>
+<pre>
+FieldPose robotPose = new FieldPose(
+        follower.pose().x(),
+        follower.pose().y(),
+        follower.pose().heading());
+
+Detection target = vision.detections()
+        .fetch(robotPose)
+        .sortByDistance()
+        .getClosest();
+
+if (target != null) {
+    telemetry.addData("class", target.getBallClass());
+    telemetry.addData("field x", target.getX());
+    telemetry.addData("field y", target.getY());
+}
+</pre>
+
+  <h3>3. Route a path through the detections</h3>
+  <p>The optional <code>weaver</code> module turns the same list into a Marrow path that dodges
+  obstacles. Feed it to Pedro Pathing and drive:</p>
+<pre>
+PathResult path = vision.detections()
+        .fetch(robotPose)
+        .sortByDistance()
+        .with(WeaverRoute.fromFetchPose()
+                .avoid(new CircleZone(new Point(72, 72), 18.0))
+                .maxTargets(4));
+
+if (path != null) {
+    follower.follow(PedroPathingConverter.toPath(path));
+}
+</pre>
+  <p><code>avoid(...)</code> zones are optional. <code>with(...)</code> returns <code>null</code>
+  when nothing was detected — always null-check.</p>
+  <p><code>PedroPathingConverter</code> is built into Marrow core itself, not Pedro:</p>
+  <pre>import com.skeletonarmy.marrow.weaver.PedroPathingConverter;</pre>
+
+  <h2 id="examples">Run the examples</h2>
+  <p>Two finished OpModes ship in
+  <a href="https://github.com/sidhuharjas/hvtest/tree/main/docs/examples">docs/examples/</a>:</p>
+  <table>
+    <tr><th>OpMode</th><th>What it does</th></tr>
+    <tr>
+      <td><code>AutoBallHuntOpMode</code><br><span class="sub">"HiveVision Weaver Auto"</span></td>
+      <td>One-shot autonomous. Detects targets, builds a Weaver route through the closest 2, drives it.</td>
+    </tr>
+    <tr>
+      <td><code>ManualBallChaseOpMode</code><br><span class="sub">"HiveVision Loop with Obstacles"</span></td>
+      <td>Runs a detection loop the whole match. Re-plans around an obstacle whenever the robot is idle.</td>
+    </tr>
+  </table>
+  <ol>
+    <li>Copy those two files plus <code>SampleFollowerFactory.java</code> into your TeamCode module
+        (they already declare <code>package org.firstinspires.ftc.teamcode</code>).</li>
+    <li>Fix the <code>VisionConfig</code> numbers for your camera mount. The config file expects the
+        Limelight under the hardware name <code>"limelight"</code> — rename it in your
+        <code>hardwareMap</code> / config if yours differs.</li>
+    <li>Build and deploy TeamCode to the robot the way you normally ship code.</li>
+    <li>On the Driver Station pick <b>Autonomous → HiveVision Weaver Auto</b> (or the loop one),
+        turn on the Limelight, press start.</li>
+  </ol>
+  <p>Telemetry shows what it sees: closest element class, field X/Y, and route status. If it says
+  &ldquo;No targets detected&rdquo;, check the Limelight pipeline index and that the game elements are
+  inside the camera view.</p>
+
+  <h2 id="calibration">Calibration</h2>
+  <p>Distance estimation comes from your camera geometry. Measure these once, write them down,
+  and positions on the field will line up:</p>
+  <table>
+    <tr><th>Method</th><th>What to measure</th></tr>
+    <tr><td><code>camHeight</code></td><td>Floor to lens center (inches)</td></tr>
+    <tr><td><code>ballHeight</code></td><td>Floor to game element center (inches)</td></tr>
+    <tr><td><code>camPitchDeg</code></td><td>Tilt below horizontal (degrees)</td></tr>
+    <tr><td><code>camXOffset</code></td><td>Lens forward of robot center (+ forward)</td></tr>
+    <tr><td><code>camYOffset</code></td><td>Lens left of robot center (+ left, − right)</td></tr>
+    <tr><td><code>minConfidence</code></td><td>Lowest confidence you trust (0.0–1.0)</td></tr>
+    <tr><td><code>maxStalenessMs</code></td><td>How old a detection may be (ms)</td></tr>
+  </table>
+  <div class="note">
+    If your robot is in CAD, pull the four geometry values from the assembly — it beats a tape
+    measure. Then double-check on the real robot for tile compression and mount flex.
+  </div>
+  <p>Full measurement procedure and coordinate frames:
+  <a href="https://github.com/sidhuharjas/hvtest/blob/main/docs/calibration.md">docs/calibration.md</a>.
+  API reference: <a href="https://github.com/sidhuharjas/hvtest/blob/main/docs/MODULES.md">docs/MODULES.md</a>.
+  Example OpModes: <a href="https://github.com/sidhuharjas/hvtest/tree/main/docs/examples">docs/examples/</a>.</p>
+
+  <h2 id="build">Build from source</h2>
+  <p>Clone <a href="https://github.com/sidhuharjas/hvtest">sidhuharjas/hvtest</a>, then:</p>
+<pre>
+./gradlew test           # unit tests, no camera needed
+./gradlew spotlessApply  # format
+./gradlew assembleRelease
+</pre>
+  <p>Every push of a <code>v*</code> tag (or a manual run of the
+  <a href="https://github.com/sidhuharjas/hvtest/actions">Publish to Pages Maven repo</a> workflow)
+  rebuilds the AARs and republishes them to this site. Bump <code>version</code> in
+  <code>build.gradle.kts</code> before tagging.</p>
+
+</main>
+
+<footer>
+  MIT license. HiveVision is not affiliated with FIRST.
+  Works with <a href="https://github.com/pedropathing/core">Pedro Pathing</a> and
+  <a href="https://marrow.skeletonarmyftc.com/">Marrow Weaver</a>.
+</footer>
+
+<script>
+(function () {
+  var canvas = document.createElement('canvas');
+  canvas.id = 'honeycomb-canvas';
+  document.body.prepend(canvas);
+  var ctx = canvas.getContext('2d');
+  var width = canvas.width = window.innerWidth;
+  var height = canvas.height = window.innerHeight;
+  var mouse = { x: width / 2, y: height / 2, active: false };
+
+  var hexRadius = 15;
+  var hexHeight = hexRadius * 2;
+  var hexWidth = Math.sqrt(3) * hexRadius;
+  var vertDist = hexHeight * 0.75;
+
+  window.addEventListener('mousemove', function (e) {
+    mouse.x = e.clientX; mouse.y = e.clientY; mouse.active = true;
+  });
+  window.addEventListener('mouseleave', function () { mouse.active = false; });
+  window.addEventListener('resize', function () {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+  });
+
+  function drawHexagon(cx, cy, radius) {
+    ctx.beginPath();
+    for (var i = 0; i < 6; i++) {
+      var angle = (Math.PI / 3) * i - (Math.PI / 6);
+      var x = cx + radius * Math.cos(angle);
+      var y = cy + radius * Math.sin(angle);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, width, height);
+    ctx.lineWidth = 0.5;
+    var cols = Math.ceil(width / hexWidth) + 2;
+    var rows = Math.ceil(height / vertDist) + 2;
+    for (var row = -1; row < rows; row++) {
+      for (var col = -1; col < cols; col++) {
+        var cx = col * hexWidth;
+        var cy = row * vertDist;
+        if (row % 2 !== 0) cx += hexWidth / 2;
+        var alpha = 0.02;
+        if (mouse.active) {
+          var dx = mouse.x - cx;
+          var dy = mouse.y - cy;
+          var mouseDist = Math.sqrt(dx * dx + dy * dy);
+          if (mouseDist < 120) alpha += (1 - (mouseDist / 120)) * 0.28;
+        }
+        ctx.strokeStyle = 'rgba(255, 255, 255, ' + alpha + ')';
+        drawHexagon(cx, cy, hexRadius);
+        ctx.stroke();
+      }
+    }
+    requestAnimationFrame(animate);
+  }
+  animate();
+})();
+</script>
+
+</body>
+</html>

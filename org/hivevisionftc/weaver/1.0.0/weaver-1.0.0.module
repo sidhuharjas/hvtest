@@ -1,0 +1,142 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "org.hivevisionftc",
+    "module": "weaver",
+    "version": "1.0.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.13"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseVariantReleaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "org.hivevisionftc",
+          "module": "core",
+          "version": {
+            "requires": "1.0.0"
+          }
+        },
+        {
+          "group": "com.skeletonarmyftc.marrow",
+          "module": "core",
+          "version": {
+            "requires": "1.2.1"
+          },
+          "excludes": [
+            {
+              "group": "*",
+              "module": "*"
+            }
+          ]
+        }
+      ],
+      "files": [
+        {
+          "name": "weaver-1.0.0.aar",
+          "url": "weaver-1.0.0.aar",
+          "size": 24491,
+          "sha512": "77c800e0937915abca6f271a8f6811b19dbb8f67e6c620b0cae4b1d288353979f6adbb0c72ec9d6a7a8c4c45147b84ef7aa6d79fe50eed8826e90d0d9f3f9f65",
+          "sha256": "c4a588f221f42004f1d3a3bd81c223ce5031406b98009aad6acbaa2ea966a72f",
+          "sha1": "6cd932a0e50afdd9dfc3f85493ea481417c4a548",
+          "md5": "b7077b896f84ef1a1ed71468af32e2ad"
+        }
+      ]
+    },
+    {
+      "name": "releaseVariantReleaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "org.hivevisionftc",
+          "module": "core",
+          "version": {
+            "requires": "1.0.0"
+          }
+        },
+        {
+          "group": "com.skeletonarmyftc.marrow",
+          "module": "core",
+          "version": {
+            "requires": "1.2.1"
+          },
+          "excludes": [
+            {
+              "group": "*",
+              "module": "*"
+            }
+          ]
+        }
+      ],
+      "files": [
+        {
+          "name": "weaver-1.0.0.aar",
+          "url": "weaver-1.0.0.aar",
+          "size": 24491,
+          "sha512": "77c800e0937915abca6f271a8f6811b19dbb8f67e6c620b0cae4b1d288353979f6adbb0c72ec9d6a7a8c4c45147b84ef7aa6d79fe50eed8826e90d0d9f3f9f65",
+          "sha256": "c4a588f221f42004f1d3a3bd81c223ce5031406b98009aad6acbaa2ea966a72f",
+          "sha1": "6cd932a0e50afdd9dfc3f85493ea481417c4a548",
+          "md5": "b7077b896f84ef1a1ed71468af32e2ad"
+        }
+      ]
+    },
+    {
+      "name": "releaseVariantReleaseSourcePublication",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "weaver-1.0.0-sources.jar",
+          "url": "weaver-1.0.0-sources.jar",
+          "size": 2660,
+          "sha512": "0733bfdc93155d6c5a80ba972cd3ec24b793fddcc8bf4f9628eac28424d2f6a144de0f1fad959431c0b55132e3092ffa3186d85b4ffdfb776e51c3aaf4de2215",
+          "sha256": "82f52d997e3a00c305df9f3237f15b56c9e131818a32fcf804fbc7490c652acf",
+          "sha1": "18cdff52122c16be48e651d79177881291bb3de4",
+          "md5": "7a753608a242dac07cdd43c3e8828a83"
+        }
+      ]
+    },
+    {
+      "name": "releaseVariantReleaseJavaDocPublication",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "javadoc",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "weaver-1.0.0-javadoc.jar",
+          "url": "weaver-1.0.0-javadoc.jar",
+          "size": 276252,
+          "sha512": "86c4794f40a824e120d19716bed951ece5bb52f9af5d1638d1116470db0dacedb7d52a9f17a11382ac8b7fe305174d8229a730468c578b62527421b9842a1617",
+          "sha256": "1b6ccd4014d89a775c83110c72629e3158069da3061ba49081844ff2de9d8c11",
+          "sha1": "0430af86e5d2a3e5fc24c16766a18559bda541e8",
+          "md5": "95d4e337882df28c7a9d64003af0fa94"
+        }
+      ]
+    }
+  ]
+}

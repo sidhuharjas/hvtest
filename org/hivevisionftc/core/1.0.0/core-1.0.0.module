@@ -1,0 +1,121 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "org.hivevisionftc",
+    "module": "core",
+    "version": "1.0.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.13"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseVariantReleaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "files": [
+        {
+          "name": "core-1.0.0.aar",
+          "url": "core-1.0.0.aar",
+          "size": 25979,
+          "sha512": "533894e71e440e39a49ca889a358718e425a6ddf3b18adb35a0cd91c9ffb15e8b3df934dad380c77532856ec697ced62c3d3445e5196a9073727ac1651e1bdbc",
+          "sha256": "af4671d4676f6c30092d7f57744bee0a2e42bc4aca886ac0fe5a37224ad6203b",
+          "sha1": "a1d4d1b9a7c68bf4944e4e5f4f295abfaa1807d1",
+          "md5": "961e42fe906ba76b193d15ee0a047cda"
+        }
+      ]
+    },
+    {
+      "name": "releaseVariantReleaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "org.firstinspires.ftc",
+          "module": "RobotCore",
+          "version": {
+            "requires": "12.0.0"
+          }
+        },
+        {
+          "group": "org.firstinspires.ftc",
+          "module": "Hardware",
+          "version": {
+            "requires": "12.0.0"
+          }
+        },
+        {
+          "group": "androidx.annotation",
+          "module": "annotation",
+          "version": {
+            "requires": "1.6.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "core-1.0.0.aar",
+          "url": "core-1.0.0.aar",
+          "size": 25979,
+          "sha512": "533894e71e440e39a49ca889a358718e425a6ddf3b18adb35a0cd91c9ffb15e8b3df934dad380c77532856ec697ced62c3d3445e5196a9073727ac1651e1bdbc",
+          "sha256": "af4671d4676f6c30092d7f57744bee0a2e42bc4aca886ac0fe5a37224ad6203b",
+          "sha1": "a1d4d1b9a7c68bf4944e4e5f4f295abfaa1807d1",
+          "md5": "961e42fe906ba76b193d15ee0a047cda"
+        }
+      ]
+    },
+    {
+      "name": "releaseVariantReleaseSourcePublication",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "core-1.0.0-sources.jar",
+          "url": "core-1.0.0-sources.jar",
+          "size": 6436,
+          "sha512": "384269d3644db85bf52fb8e5e099319cd21e4c43dadfae62ae626d45425cbce09918ecf99b93737acc3e91772e9ddcdec64e149d7ec8b6694771651b6f3d1054",
+          "sha256": "4b23c33715fb3282d38adee8c11c1a7e4aa747ce38e2b081bc26e3901f19f7f7",
+          "sha1": "108dd28fc09c1b3bf008b5b656f206f428fc9329",
+          "md5": "d7a863de18b8f12affb26690ec7e4c86"
+        }
+      ]
+    },
+    {
+      "name": "releaseVariantReleaseJavaDocPublication",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "javadoc",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "core-1.0.0-javadoc.jar",
+          "url": "core-1.0.0-javadoc.jar",
+          "size": 315732,
+          "sha512": "1cdced500afc311bbe376b0718f8d4ae6781c68a40c91738cafbfd23015f1c89e8367d869f0458d18e0449e22f7c9b8b93219cef035f93e041a8ff7c4935edd7",
+          "sha256": "9cb0c13f8cd175b00ee10b1b05cfe90234f0e79d8954cb69b5c2391e95c6c08c",
+          "sha1": "dfa3133fa3b1efdf985c8092dc1c22305e1f0f20",
+          "md5": "c27ecae56ab2457c94347251f88c96bd"
+        }
+      ]
+    }
+  ]
+}
