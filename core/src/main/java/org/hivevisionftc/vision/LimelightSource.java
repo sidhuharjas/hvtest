@@ -1,5 +1,7 @@
 package org.hivevisionftc.vision;
 
+import androidx.annotation.NonNull;
+
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
@@ -17,6 +19,7 @@ public class LimelightSource implements DetectionSource {
         this.limelight.start();
     }
 
+    @NonNull
     @Override
     public List<Detection> latest() {
         LLResult result = limelight.getLatestResult();

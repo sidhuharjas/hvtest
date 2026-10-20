@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import androidx.annotation.NonNull;
+
 import com.skeletonarmy.marrow.weaver.PathResult;
 import com.skeletonarmy.marrow.weaver.PathRoute;
 import com.skeletonarmy.marrow.weaver.Weaver;
@@ -272,6 +274,7 @@ class WeaverRouteTest {
     private static HiveVision visionSeeing(Detection... detections) {
         final List<Detection> list = Arrays.asList(detections);
         DetectionSource source = new DetectionSource() {
+            @NonNull
             @Override
             public List<Detection> latest() {
                 return list;
