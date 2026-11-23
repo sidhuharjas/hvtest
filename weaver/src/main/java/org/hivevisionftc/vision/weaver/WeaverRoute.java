@@ -12,26 +12,25 @@ import java.util.List;
 import java.util.function.Function;
 import org.hivevisionftc.vision.Detection;
 import org.hivevisionftc.vision.Pose;
-import org.hivevisionftc.vision.HiveVision;
 
 /**
- * Plans a Marrow Weaver route through the detections in a {@link HiveVision.DetectionList}.
- *
- * <p>Plugs into the core through {@link HiveVision.DetectionList#with(Function)}, so the chain keeps flowing
- * and the core never depends on this module:
+ * Plans a Marrow Weaver route through a list of detections.
  *
  * <pre>{@code
- * PathResult path = vision.detections()
- *         .fetch(pose)
- *         .sortByColor()
- *         .with(WeaverRoute.from(pose).avoid(new CircleZone(new Point(72, 72), 18)).maxTargets(4));
+ * PathResult path = WeaverRoute.from(pose).maxTargets(4)
+ *         .apply(vision.fetchLimelightDetections(pose));
  *
  * if (path != null) follower.follow(PedroPathingConverter.toPath(path));
  * }</pre>
  *
- * <p>The list must already hold field-frame positions (that is what {@code fetch(...)} produces).
+ * <p>Detections must already hold field-frame positions (that is what
+ * {@code fetchLimelightDetections(...)} produces).
+ *
+ * <p>The core rewrite removed {@code HiveVision.DetectionList}, so {@code apply}
+ * takes the {@code List<Detection>} the core returns, and {@code toPoint} reads
+ * the pose through {@code getPose()}. The planning logic is unchanged.
  */
-public final class WeaverRoute implements Function<HiveVision.DetectionList, PathResult> {
+public final class WeaverRoute implements Function<List<Detection>, PathResult> {
     private Pose start;
     private Pose end;
     private final List<Zone> obstacles;
@@ -47,11 +46,6 @@ public final class WeaverRoute implements Function<HiveVision.DetectionList, Pat
     public static WeaverRoute from(Pose start) {
         if (start == null) throw new IllegalArgumentException("start must not be null");
         return new WeaverRoute(start);
-    }
-
-    /** Starts the route at the pose the list was last fetched with. */
-    public static WeaverRoute fromFetchPose() {
-        return new WeaverRoute(null);
     }
 
     /** Adds obstacle zones (field inches) the route must bend around. */
@@ -110,21 +104,15 @@ public final class WeaverRoute implements Function<HiveVision.DetectionList, Pat
      * @throws RuntimeException whatever Weaver throws for degenerate geometry; catch it if you want to fall back
      */
     @Override
-    public PathResult apply(HiveVision.DetectionList detections) {
-        List<Detection> found = detections.getDetections();
-        if (found.isEmpty()) return null;
-
-        if (start == null) {
-            start = detections.getRobotPose();
-        }
-
-        return plan(found, start);
+    public PathResult apply(List<Detection> detections) {
+        if (detections.isEmpty()) return null;
+        return plan(detections, start);
     }
 
     /**
-     * Plans a route through already field-frame detections, without needing a {@link HiveVision.DetectionList}.
+     * Plans a route through already field-frame detections.
      *
-     * @param fieldDetections detections whose {@code getX()/getY()} are field inches
+     * @param fieldDetections detections whose pose is in field inches
      * @param from the pose the route starts from
      * @return the planned route, or {@code null} when there are no detections
      * @throws IllegalStateException if {@code from} is {@code null}
@@ -133,7 +121,7 @@ public final class WeaverRoute implements Function<HiveVision.DetectionList, Pat
         if (fieldDetections.isEmpty()) return null;
         if (from == null) {
             throw new IllegalStateException(
-                    "No start pose: pass one to WeaverRoute.from(pose) or call fetch(...) on the list first");
+                    "No start pose: pass one to WeaverRoute.from(pose)");
         }
 
         WeaverBuilder builder = Weaver.builder();
@@ -155,7 +143,8 @@ public final class WeaverRoute implements Function<HiveVision.DetectionList, Pat
 
     /** Converts one field-frame detection to a Weaver target (heading is derived from the direction of travel). */
     public static Point toPoint(Detection detection) {
-        return new Point(detection.getX(), detection.getY());
+        Pose pose = detection.getPose();
+        return new Point(pose.getX(), pose.getY());
     }
 
     /** Converts field-frame detections to Weaver targets, preserving order. */

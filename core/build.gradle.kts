@@ -31,6 +31,8 @@ tasks.withType<Test>().configureEach {
 dependencies {
     implementation("org.firstinspires.ftc:RobotCore:12.0.0")
     implementation("org.firstinspires.ftc:Hardware:12.0.0")
+    // VisionPortal / VisionProcessor + OpenCV for the webcam track.
+    implementation("org.firstinspires.ftc:Vision:12.0.0")
     implementation("androidx.annotation:annotation:1.6.0")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")

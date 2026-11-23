@@ -7,8 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import androidx.annotation.NonNull;
-
 import com.skeletonarmy.marrow.weaver.PathResult;
 import com.skeletonarmy.marrow.weaver.PathRoute;
 import com.skeletonarmy.marrow.weaver.Weaver;
@@ -17,13 +15,10 @@ import com.skeletonarmy.marrow.zones.CircleZone;
 import com.skeletonarmy.marrow.zones.Point;
 import com.skeletonarmy.marrow.zones.Zone;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.hivevisionftc.vision.Detection;
-import org.hivevisionftc.vision.DetectionSource;
 import org.hivevisionftc.vision.Pose;
-import org.hivevisionftc.vision.HiveVision;
 import org.hivevisionftc.vision.VisionConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,16 +27,15 @@ import org.junit.jupiter.api.Test;
 /**
  * Desktop self-test for the Weaver integration: no robot, no camera, no Android.
  *
- * <p>Routes are planned by the real Marrow Weaver. Most tests hand {@link WeaverRoute#plan} detections that are
- * already in field coordinates, so they pin down exactly what the integration feeds Weaver and what comes back,
- * independent of the camera projection in core. A couple of tests go through the real
- * {@code DetectionList.with(...)} chain.
+ * <p>Routes are planned by the real Marrow Weaver. Tests hand {@link WeaverRoute#plan} detections
+ * that are already in field coordinates, so they pin down exactly what the integration feeds Weaver
+ * and what comes back, independent of the camera projection in core.
  */
 class WeaverRouteTest {
     private static final Pose START = new Pose(24, 24, 0.0);
 
     /** An obstacle sitting 3" off the straight line from START to (35, 24). */
-    private static final Point OBSTACLE_CENTRE = new Point(30, 27);
+    private static final Point OBSTACLE_CENTER = new Point(30, 27);
 
     private static final double OBSTACLE_RADIUS = 4.0;
 
@@ -60,9 +54,8 @@ class WeaverRouteTest {
     /* ---------------- nothing to plan ---------------- */
 
     @Test
-    void emptyListYieldsNoRoute() {
-        HiveVision vision = visionSeeing();
-        assertNull(vision.detections().fetch(START).with(WeaverRoute.from(START)));
+    void emptyApplyYieldsNoRoute() {
+        assertNull(WeaverRoute.from(START).apply(Collections.emptyList()));
     }
 
     @Test
@@ -74,7 +67,7 @@ class WeaverRouteTest {
     void planWithoutAStartPoseSaysSo() {
         assertThrows(
                 IllegalStateException.class,
-                () -> WeaverRoute.fromFetchPose().plan(Collections.singletonList(ballAt(60, 24)), null));
+                () -> WeaverRoute.from(START).plan(Collections.singletonList(ballAt(60, 24)), null));
     }
 
     @Test
@@ -111,10 +104,9 @@ class WeaverRouteTest {
 
     @Test
     void aFieldFrameDetectionKeepsBothCoordinates() {
-        // Regression: Detection(Detection, Pose) used to copy X into Y.
         Detection d = ballAt(3, 7);
-        assertEquals(3.0, d.getX(), 1e-9);
-        assertEquals(7.0, d.getY(), 1e-9);
+        assertEquals(3.0, d.getPose().getX(), 1e-9);
+        assertEquals(7.0, d.getPose().getY(), 1e-9);
     }
 
     /* ---------------- route ordering and caps ---------------- */
@@ -164,7 +156,7 @@ class WeaverRouteTest {
 
     @Test
     void routeBendsAroundAnObstacleOnTheStraightLine() {
-        Zone obstacle = new CircleZone(OBSTACLE_CENTRE, OBSTACLE_RADIUS);
+        Zone obstacle = new CircleZone(OBSTACLE_CENTER, OBSTACLE_RADIUS);
 
         PathResult plan = WeaverRoute.from(START).avoid(obstacle).plan(balls(35, 24), START);
 
@@ -173,18 +165,18 @@ class WeaverRouteTest {
         assertTrue(
                 WeaverGenerator.isPathClear(route, Collections.singletonList(obstacle), Weaver.getConfig()),
                 "the route keeps the configured clearance from the obstacle");
-        double closest = closestApproach(plan, OBSTACLE_CENTRE);
+        double closest = closestApproach(plan, OBSTACLE_CENTER);
         assertTrue(closest > OBSTACLE_RADIUS, "the route bends instead of clipping the obstacle, closest=" + closest);
     }
 
     @Test
     void avoidAcceptsAnyCollectionOfZones() {
         List<Zone> zones = new ArrayList<>();
-        zones.add(new CircleZone(OBSTACLE_CENTRE, OBSTACLE_RADIUS));
+        zones.add(new CircleZone(OBSTACLE_CENTER, OBSTACLE_RADIUS));
 
         PathResult plan = WeaverRoute.from(START).avoid(zones).plan(balls(35, 24), START);
 
-        assertTrue(closestApproach(plan, OBSTACLE_CENTRE) > OBSTACLE_RADIUS);
+        assertTrue(closestApproach(plan, OBSTACLE_CENTER) > OBSTACLE_RADIUS);
     }
 
     @Test
@@ -201,41 +193,6 @@ class WeaverRouteTest {
         assertEquals(1, plan.getUnvisitedTargets().size(), "the blocked target is reported");
     }
 
-    /* ---------------- through DetectionList.with ---------------- */
-
-    @Test
-    void withReturnsWhateverTheFunctionProduces() {
-        HiveVision vision = visionSeeing();
-        assertEquals(42, (int) vision.detections().with(list -> 42));
-    }
-
-    @Test
-    void theChainPlansFromTheFetchPoseWhenNoStartIsGiven() {
-        HiveVision vision = visionSeeing(new Detection(1, 0, 10, 0.9, 1));
-        Pose robot = new Pose(72, 72, 0.0);
-
-        PathResult plan = vision.detections().fetch(robot).with(WeaverRoute.fromFetchPose());
-
-        assertNotNull(plan);
-        assertEquals(1, plan.getVisitedTargets().size(), "the one detection became the one target");
-        Point first = plan.getPath().getSegments().get(0).sample(5).get(0);
-        assertEquals(72.0, first.getX(), 1.0, "the route starts at the pose the list was fetched with");
-        assertEquals(72.0, first.getY(), 1.0);
-    }
-
-    @Test
-    void anExplicitStartBeatsTheFetchPose() {
-        HiveVision vision = visionSeeing(new Detection(1, 0, 10, 0.9, 1));
-
-        PathResult plan = vision.detections()
-                .fetch(new Pose(72, 72, 0.0))
-                .with(WeaverRoute.from(new Pose(50, 72, 0.0)));
-
-        assertNotNull(plan);
-        Point first = plan.getPath().getSegments().get(0).sample(5).get(0);
-        assertEquals(50.0, first.getX(), 1.0, "the explicit start wins");
-    }
-
     @Test
     void orderedKeepsTheOrderTheDetectionsWereGivenIn() {
         // Without ordered(), (60,24) is visited first (see routeVisitsTheTurnCheaperTarget...).
@@ -248,11 +205,24 @@ class WeaverRouteTest {
         assertEquals(60.0, visited.get(1).getX(), 0.5);
     }
 
+    /* ---------------- apply ---------------- */
+
+    @Test
+    void applyUsesTheConfiguredStart() {
+        PathResult plan = WeaverRoute.from(START).apply(balls(84, 24));
+
+        assertNotNull(plan);
+        assertEquals(1, plan.getVisitedTargets().size());
+        assertEquals(84.0, plan.getVisitedTargets().get(0).getX(), 0.5);
+    }
+
     /* ---------------- harness ---------------- */
 
-    /** A detection already in field coordinates, the way {@code fetch(...)} leaves them. */
+    /** A detection already in field coordinates. */
     private static Detection ballAt(double x, double y) {
-        return new Detection(new Detection(1, 0, 0, 0.9, 1), new Pose(x, y));
+        Detection d = new Detection(new Pose(0, 0, 0), new VisionConfig(), 0, 0, 0.9, 1);
+        d.setPose(new Pose(x, y));
+        return d;
     }
 
     /** Field-frame detections from a flat x,y,x,y... list. */
@@ -262,29 +232,12 @@ class WeaverRouteTest {
         return out;
     }
 
-    /** Distance from {@code centre} to the nearest sample on the plan's first curve. */
-    private static double closestApproach(PathResult plan, Point centre) {
+    /** Distance from {@code center} to the nearest sample on the plan's first curve. */
+    private static double closestApproach(PathResult plan, Point center) {
         double closest = Double.MAX_VALUE;
         for (Point p : plan.getPath().getSegments().get(0).sample(41)) {
-            closest = Math.min(closest, Math.hypot(p.getX() - centre.getX(), p.getY() - centre.getY()));
+            closest = Math.min(closest, Math.hypot(p.getX() - center.getX(), p.getY() - center.getY()));
         }
         return closest;
-    }
-
-    private static HiveVision visionSeeing(Detection... detections) {
-        final List<Detection> list = Arrays.asList(detections);
-        DetectionSource source = new DetectionSource() {
-            @NonNull
-            @Override
-            public List<Detection> fetchLatestDetections() {
-                return list;
-            }
-
-            @Override
-            public long stalenessMs() {
-                return 0;
-            }
-        };
-        return new HiveVision(source, new VisionConfig());
     }
 }
